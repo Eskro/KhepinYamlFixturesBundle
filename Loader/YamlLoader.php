@@ -98,13 +98,29 @@ class YamlLoader
     }
 
     /**
+     * Open and return content of a single fixure file
+     */
+    protected function loadFixtureFileContent($file_path)
+    {
+        $content = '';
+        if (is_file($file_path)) {
+            if (false === is_readable($file_path)) {
+                throw new \Exception(sprintf('Unable to open "%s" as the file is not readable.', $input));
+            }
+            $content = file_get_contents($file_path);
+        }
+
+        return $content;
+    }
+
+    /**
      * Loads the fixtures file by file and saves them to the database
      */
     public function loadFixtures()
     {
         $this->loadFixtureFiles();
         foreach ($this->fixture_files as $file) {
-            $fixture_data = Yaml::parse($file);
+            $fixture_data = Yaml::parse($this->loadFixtureFileContent($file));
             // if nothing is specified, we use doctrine orm for persistence
             $persistence = isset($fixture_data['persistence']) ? $fixture_data['persistence'] : 'orm';
 
@@ -145,7 +161,7 @@ class YamlLoader
 
         // Instanciate purger and executor
         $persister = $this->getPersister($persistence);
-        $entityManagers = ($databaseName) 
+        $entityManagers = ($databaseName)
             ? array($persister->getManager($databaseName))
             : $persister->getManagers();
 

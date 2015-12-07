@@ -5,6 +5,7 @@ namespace Khepin\Utils;
 use Doctrine\ORM\EntityManager;
 use \Mockery as m;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 
 class BaseTestCaseMongo extends \PHPUnit_Framework_TestCase
 {
@@ -31,6 +32,7 @@ class BaseTestCaseMongo extends \PHPUnit_Framework_TestCase
             'getRetryConnect'               => 2,
             'getRetryQuery'                 => 2,
             'getLoggerCallable'             => null,
+            'getRepositoryFactory'          => new \Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory()
         ));
 
         return $config;
@@ -63,7 +65,7 @@ class BaseTestCaseMongo extends \PHPUnit_Framework_TestCase
         $dm = \Doctrine\ODM\MongoDB\DocumentManager::create(null, $config);
 
         return $this->doctrine = m::mock(array(
-            'getManager' => $dm, 
+            'getManager' => $dm,
             'getManagers' => array($dm),
             'getManagerForClass' => $dm
         ));
